@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IDomain.cs" />
+    <Compile Remove="IMessage.cs" />
+    <Compile Remove="IIntegrationHandler.cs" />
+    <Compile Remove="IDomain.cs" />
+    <Compile Remove="IDDMessage.cs" />
+    <Compile Remove="IIntegrationMapper.cs" />
+    <Compile Remove="AbstractDomain.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Downstream\Downstream.csproj" />
+    <ProjectReference Include="..\Upstream\Upstream.csproj" />
+    <ProjectReference Include="..\Up_Down_Integration\Up_Down_Integration.csproj" />
+  </ItemGroup>
+</Project>
