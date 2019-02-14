@@ -1,5 +1,7 @@
 ﻿using static Upstream;
 using System;
+using static Downstream;
+using AnotherDomain;
 
 namespace TestConsole
 {
@@ -7,13 +9,15 @@ namespace TestConsole
 	{
 		static void Main(string[] args)
 		{
-			var t1 = new Downstream();
-			var t2 = new Upstream();
+			var domain1 = new Upstream();
+			var domain2 = new Downstream();
+			var domain3 = new AnotherDomainClass();
 
-			t2.MapDownstreamToUpstream(t1.GetAMessage());
-			Console.WriteLine();
+			domain1.MapDownstreamToUpstream(() => new UpstreamMessage { Message = domain2.GetAMessage().Message });
+			domain1.MapDownstreamToUpstream(() => new UpstreamMessage { Message = domain3.GetAnotherDomainMessage().Name });
+			domain2.SetComBusToUpstream(domain1.OnNext, msg => new UpstreamMessage { Message = msg.Message });
+
+			Console.ReadLine();
 		}
 	}
 }
-
-

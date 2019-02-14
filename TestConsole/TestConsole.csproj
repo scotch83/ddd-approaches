@@ -17,6 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Downstream\Downstream.csproj" />
     <ProjectReference Include="..\Upstream\Upstream.csproj" />
-    <ProjectReference Include="..\Up_Down_Integration\Up_Down_Integration.csproj" />
+    <ProjectReference Include="..\AnotherDomain\AnotherDomain.csproj" />
   </ItemGroup>
 </Project>

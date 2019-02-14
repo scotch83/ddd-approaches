@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 public class Upstream : IObserver<UpstreamMessage>
 {
@@ -11,6 +11,10 @@ public class Upstream : IObserver<UpstreamMessage>
 	public Upstream()
 	{
 		LatestPrimitivesMessageeStreamPlug.Subscribe(this);
+	}
+	public void MapDownstreamToUpstream(Func<UpstreamMessage> getConvertedMessage)
+	{
+		OnNext(getConvertedMessage());
 	}
 	public override string ToString()
 	{
@@ -29,7 +33,7 @@ public class Upstream : IObserver<UpstreamMessage>
 	public void OnNext(UpstreamMessage value)
 	{
 		UpstreamSpecificData = value;
-		Debug.WriteLine(UpstreamSpecificData.Message);
+		Task.Run(() => Console.WriteLine(UpstreamSpecificData.Message));
 	}
 }
 
