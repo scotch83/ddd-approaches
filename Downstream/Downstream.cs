@@ -1,78 +1,54 @@
-﻿using System.Reactive.Subjects;
-using System;
+﻿using System;
 using System.Timers;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class Downstream
 {
 
-	public DownstreamMessage DownStreamSpecificData { get; set; }
-
-	public BehaviorSubject<DownstreamMessage> LatestPrimitivesMessageeStreamPlug = new BehaviorSubject<DownstreamMessage>(null);
+	// A constructor for a domain specific class
 
 	public Downstream()
 	{
-		LatestPrimitivesMessageeStreamPlug.Subscribe(data => {
-			DownStreamSpecificData = data ?? new DownstreamMessage { Message = "I have no messages for you" };
-			Console.WriteLine(DownStreamSpecificData.Message);
-		});
-		var aTimer = new Timer(1000);
-		var counter = 1;
-		aTimer.Elapsed += (obj, e) => {
-			if (CommunicationBus == null)
-				Console.WriteLine("I did not have any message");
-			CommunicationBus(new DownstreamMessage { Message = "Another message " + counter++ });
-		};
-		aTimer.Enabled = true;
-	}
-	Action<DownstreamMessage> CommunicationBus;
-	public void SetComBusToUpstream<TUpstreamMessage>(Action<TUpstreamMessage> onNext, Func<DownstreamMessage, TUpstreamMessage> converter)
-	{
-		CommunicationBus = down =>
-		{
-			onNext?.Invoke(converter(down));
-		};
+		SetupTimer();
 	}
 
-	public override string ToString()
+	// A static collection mapping domains to their busses for message sending
+
+	static Dictionary<Type, Action<DownstreamMessage>> ComBusCollection = new Dictionary<Type, Action<DownstreamMessage>>();
+
+	// A function that is adding mapping functionality within exposed concept (DownstreamMessage) and external world specific types T
+
+	public static void SetComBusToUpstream<T>(Action<T> onNext, Func<DownstreamMessage, T> converter)
 	{
-		return DownStreamSpecificData.Message;
+		ComBusCollection.Add(typeof(T), downMessage => onNext.Invoke(converter(downMessage)));
 	}
 
-	// this is just to track difference in sent messages
-	static int count = 1;
-
-	public DownstreamMessage GetAMessage()
-	{
-		return new DownstreamMessage { Message = $"This is a message {count++}" };
-	}
+	// A domain specific type that is exposed to the outer world
 
 	public class DownstreamMessage
 	{
-		public string Message { get; set; }	
+		public string Message { get; set; }
 	}
 
-	public class DownstreamACL
+	// setup a timer to send messages to subscribed listeners
+	// this approach does not take care of communicating previous state to listeners subscribing after the events have been sent
+	// something like Rx Subjects can take care of this kind of things (or our own implementation of it)
+
+	void SetupTimer()
 	{
+		var timer = new Timer(1000);
+		var counter = 1;
 
-		// depending on the kind of state that we want
-		public readonly BehaviorSubject<DownstreamMessage> LastMessageStream = new BehaviorSubject<DownstreamMessage>(null);
+		timer.Elapsed += (obj, e) => {
+			foreach (var item in ComBusCollection)
+				item.Value.Invoke(new DownstreamMessage { Message = "This is an emitted message " + counter++ });
+		};
 
-		// Singleton
-		static DownstreamACL _instance;
+		timer.Enabled = true;
+	}
 
-		public static DownstreamACL Instance
-		{
-			get
-			{
-				return _instance = _instance ?? new DownstreamACL();
-			}
-		}
-
-		private void SendMessage(DownstreamMessage msg)
-		{
-			LastMessageStream.OnNext(msg);
-		}
-
+	public void SendMessageInSystem(DownstreamMessage msg)
+	{
+		Console.WriteLine("I have received another message from someone " + msg.Message);
 	}
 }
