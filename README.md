@@ -3,4 +3,4 @@ This is a repo demonstrating different interpretations of a DDD for C# applicati
 
 ## Disclaimer
 
-This repo is intended as a personal interpretation of a Domain Driven Design approach to C# architectures, and it is used to exchange ideas in the team
+This repo is intended as a personal interpretation of a Domain Driven Design approach to C# architectures, and has been used to illustrate ideas to my professional team of colleagues.
